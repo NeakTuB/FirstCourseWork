@@ -1,0 +1,7 @@
+﻿  1.CourseWork_OKP.c
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(73,30): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(99,30): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(905,34): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(985,1): warning C4047: инициализация: "char" отличается по уровням косвенного обращения от "void *"
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(1025): warning C4715: addUser: значение возвращается не при всех путях выполнения
+  1.CourseWork_OKP.vcxproj -> D:\Курсач\1.CourseWork_OKP\Debug\1.CourseWork_OKP.exe
