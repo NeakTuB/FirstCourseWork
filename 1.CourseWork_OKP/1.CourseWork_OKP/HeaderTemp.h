@@ -259,4 +259,179 @@ int main() {
 
     return 0;
 }*/
-
+/*
+ int n = 0, CheckTruthFind = 0, CountUsers = 0;
+    char* str, s;
+    bool CheckTruth = false;
+    s = fgetc(File);
+    do {
+        n = 0;
+        s = fgetc(File);
+        if ((int)s == -103) {
+            s = EOF;
+        }
+        else {
+            if (strcmp(CheckMode, "PASS") == 0) {
+                s = fgetc(File);
+                while (s != '\n' && s != EOF) {
+                    s = fgetc(File);
+                }
+                if (CountUsers < 9) { fseek(File, 1, SEEK_CUR); }
+                else{ fseek(File, 0, SEEK_CUR); }
+            }
+            if (CountUsers >= 9) {
+                fseek(File, 9, SEEK_CUR);
+            }
+            else {
+                fseek(File, 8, SEEK_CUR);
+            }
+            str = (char*)malloc(sizeof(char) * MaxLogSymbol + 1);
+            s = fgetc(File);
+            while (s != '\n' && s != EOF) {
+                *(str + n) = s;
+                n++;
+                s = fgetc(File);
+            }
+            *(str + n) = '\0';
+            CountUsers++;
+            if (!strcmp(EnteredData, str)) { // strcmp(EnteredData, str) == 0        =    !strcmp(EnteredData, str
+                CheckTruth = true;
+            }
+            else if (strcmp(CheckMode, "LOGIN") == 0) {
+                do {
+                    s = fgetc(File);
+                } while (s != '\n' && s != EOF);
+            }
+            free(str);
+        }
+    } while (CheckTruth != true && s != EOF && CountUsers < 99);
+    if (CountUsers == 99) {
+        printf("Достигнуто максимальное количество пользователей\n");
+    }
+    return CheckTruth;
+*/
+/*void readingDataDoc(Doctors** head, FILE* Doc) {
+    Doctors* p = NULL;
+    int count = 0, tmp = 0;
+    fseek(Doc, 0, SEEK_END);
+    if (ftell(Doc) == 0);
+    else {
+        p = malloc(sizeof(Doctors));
+        if ((p = malloc(sizeof(Doctors))) == NULL) {
+            printf("\tОшибка выделения памяти для стека!\n");
+        }
+        do {
+            fseek(Doc, tmp, SEEK_SET);
+            if (count == 0) {
+                p->prev = NULL;
+                p->ID = atoi(readFromFile(Doc));
+                p->surname = readFromFile(Doc);
+                p->name = readFromFile(Doc);
+                p->middleName = readFromFile(Doc);
+                p->specialty = readFromFile(Doc);
+                p->category = readFromFile(Doc);
+                count++;
+            }
+            else {
+                p = malloc(sizeof(Doctors));
+                p->prev = *head;
+                p->ID = atoi(readFromFile(Doc));
+                p->surname = readFromFile(Doc);
+                p->name = readFromFile(Doc);
+                p->middleName = readFromFile(Doc);
+                p->specialty = readFromFile(Doc);
+                p->category = readFromFile(Doc);
+                count++;
+            }
+            *head = p;
+            tmp = ftell(Doc);
+            fseek(Doc, 0, SEEK_END);
+        } while (ftell(Doc) > tmp );
+    }
+}*/
+/*
+void pushDoc(Doctors** head, FILE* File) {
+    Doctors* p;
+    bool check;
+    do {
+        check = false;
+        p = NULL;
+        if (*head == NULL) {
+            p = malloc(sizeof(Doctors));
+            if ((p = malloc(sizeof(Doctors))) == NULL) {
+                printf("\tОшибка выделения памяти для стека!\n");
+            }
+            p->prev = NULL;
+            p->ID = 1;
+        }
+        else {
+            int count = (*head)->ID;
+            p = *head;
+            do {
+                if (p->ID > count) {
+                    count = p->ID;
+                }
+                p = p->prev;
+            } while (p != NULL);
+            p = *head;
+            p = malloc(sizeof(Doctors));
+            p->prev = *head;
+            p->ID = count + 1;
+        }
+        do {
+            printf("Введите фамилию: ");
+            p->surname = writeString();
+            if (strlen(p->surname) > MaxSecondNameSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->surname) > MaxSecondNameSymbol);
+        do {
+            printf("Введите имя: ");
+            p->name = writeString();
+            if (strlen(p->name) > MaxNameSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxNameSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->name) > MaxNameSymbol);
+        do {
+            printf("Введите отчество: ");
+            p->middleName = writeString();
+            if (strlen(p->middleName) > MaxSecondNameSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->middleName) > MaxSecondNameSymbol);
+        if (compare(&p->surname, File) == true && compare(&p->name, File) == true && compare(&p->middleName, File) == true) {
+            check = true;
+            memset(p, 0, sizeof(Doctors));
+            printf("\tДанный пользователь уже существует в системе!\n");
+            system("pause");
+            system("cls");
+        }
+        if (check == false) {
+            do {
+                printf("Введите специальность: ");
+                p->specialty = writeString();
+                if (strlen(p->specialty) > MaxSpecialSymbol) {
+                    printf("\tМаксимальный размер строки %d символов\n", MaxSpecialSymbol);
+                    system("pause");
+                    system("cls");
+                }
+            } while (strlen(p->specialty) > MaxSpecialSymbol);
+            do {
+                printf("Введите категорию: ");
+                p->category = writeString();
+                if (strlen(p->category) > MaxCategorSymbol) {
+                    printf("\tМаксимальный размер строки %d символов\n", MaxCategorSymbol);
+                    system("pause");
+                    system("cls");
+                }
+            } while (strlen(p->category) > MaxCategorSymbol);
+            *head = p;
+        }
+    } while (check == true);
+}*/

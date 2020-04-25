@@ -66,9 +66,26 @@
 int main() {
     system("chcp 1251>null");
     char* inputLogin = NULL, * inputPassword = NULL;
-    const char* admin = "ADMIN", * user = "USER",* login = "LOGIN", * pass = "PASS";
+    const char* admin = "ADMIN", * user = "USER", * login = "LOGIN", * pass = "PASS";
     bool Login, Password, authCheck = false, EscCheck = false;
     FILE* authFile;
+    while (1) {
+        switch (main_menu()) {
+        case '1':
+            admin_menu();
+            break;
+        case '2':
+            user_menu();
+            break;
+        case '3':
+            regist_menu();
+            break;
+        case '4':
+            return 0;
+        }
+    }
+}
+    /*
     authFile = fopen("Authentification.txt", "r");
     if ((authFile = fopen("Authentification.txt", "r")) == NULL) {
         printf("\tОшибка открытия файла!\n");
@@ -169,4 +186,4 @@ int main() {
             break;
         }
     }
-}
+}*/
