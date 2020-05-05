@@ -1,11 +1,7 @@
 ﻿  1.CourseWork_OKP.c
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(67,30): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(93,30): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(119,30): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(1299,34): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(1379,1): warning C4047: инициализация: "char" отличается по уровням косвенного обращения от "void *"
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\1.CourseWork_OKP.c(70,17): warning C4101: Password: неиспользованная локальная переменная
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\1.CourseWork_OKP.c(71,11): warning C4101: authFile: неиспользованная локальная переменная
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\1.CourseWork_OKP.c(70,10): warning C4101: Login: неиспользованная локальная переменная
-D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(1419): warning C4715: addUser: значение возвращается не при всех путях выполнения
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(86,30): warning C4047: =: "char" отличается по уровням косвенного обращения от "void *"
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(141,40): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(377,10): warning C4101: s: неиспользованная локальная переменная
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(477,54): warning C4101: s: неиспользованная локальная переменная
+D:\Курсач\1.CourseWork_OKP\1.CourseWork_OKP\CoursFlib.h(472): warning C4715: AuthFunction: значение возвращается не при всех путях выполнения
   1.CourseWork_OKP.vcxproj -> D:\Курсач\1.CourseWork_OKP\Debug\1.CourseWork_OKP.exe

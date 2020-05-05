@@ -435,3 +435,125 @@ void pushDoc(Doctors** head, FILE* File) {
         }
     } while (check == true);
 }*/
+/*
+void pushDoc(Doctors** head, FILE* File) {
+    Doctors* p;
+    FILE* tmpLogin;
+    bool check;
+    int mode;
+    do {
+        check = false;
+        p = NULL;
+        if (*head == NULL) {
+            p = malloc(sizeof(Doctors));
+            if ((p = malloc(sizeof(Doctors))) == NULL) {
+                printf("\tОшибка выделения памяти для стека!\n");
+            }
+            p->prev = NULL;
+            p->ID = 1;
+        }
+        else {
+            int count = (*head)->ID;
+            p = *head;
+            do {
+                if (p->ID > count) {
+                    count = p->ID;
+                }
+                p = p->prev;
+            } while (p != NULL);
+            p = *head;
+            p = malloc(sizeof(Doctors));
+            p->prev = *head;
+            p->ID = count + 1;
+        }
+        do {
+            printf("Введите фамилию: ");
+            p->surname = strconv(writeStr(2));
+
+            if (strlen(p->surname) > MaxSecondNameSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->surname) > MaxSecondNameSymbol);
+        do {
+            printf("Введите имя: ");
+            p->name = strconv(writeStr(2));
+            if (strlen(p->name) > MaxNameSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxNameSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->name) > MaxNameSymbol);
+        do {
+            printf("Введите отчество: ");
+            p->middleName = strconv(writeStr(2));
+            if (strlen(p->middleName) > MaxSecondNameSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->middleName) > MaxSecondNameSymbol);
+        do {
+            printf("Введите специальность: ");
+            p->specialty = strconv(writeStr(2));
+            if (strlen(p->specialty) > MaxSpecialSymbol) {
+                printf("\tМаксимальный размер строки %d символов\n", MaxSpecialSymbol);
+                system("pause");
+                system("cls");
+            }
+        } while (strlen(p->specialty) > MaxSpecialSymbol);
+        if (ftell(File) != 0) {
+            if(strcmp(p->specialty, "Медрегистратор") == 0) p->category = "-";
+            else {
+                do {
+                    printf("Введите категорию: ");
+                    p->category = strconv(writeStr(2));
+                    if (strlen(p->category) > MaxCategorSymbol) {
+                        printf("\tМаксимальный размер строки %d символов\n", MaxCategorSymbol);
+                        system("pause");
+                        system("cls");
+                    }
+                } while (strlen(p->category) > MaxCategorSymbol);
+            }
+            if (compare(&p->surname, File) == true && compare(&p->name, File) == true && compare(&p->middleName, File) == true) {
+                check = true;
+                memset(p, 0, sizeof(Doctors));
+                printf("\tДанный пользователь уже существует в системе!\n");
+                system("pause");
+                system("cls");
+            }
+            do {
+                printf("Введите логин медработника: ");
+                char* tmp = writeStr(4);
+                if (strlen(tmp) > MaxLogSymbol || strlen(tmp) < MinLogSymbol) {
+                    printf("Возможный размер логина от %d до %d символов!\n", MinLogSymbol, MaxLogSymbol);
+                    system("pause");
+                    system("cls");
+                }
+                else {
+                    tmpLogin = fopen("RegFile.txt", "a+");
+                    if (tmpLogin == NULL) {
+                        printf("\tОшибка создания / открытия файла!\n");
+                        system("pause");
+                        system("cls");
+                    }
+                    else {
+                        if (strcmp(p->specialty, "Медрегистратор") == 0) {
+                            mode = 3;
+                        }
+                        else if (strcmp(p->category, "Высшая") == 0) mode = 1;
+                        else mode = 2;
+                        fprintf(tmpLogin, "%s %d %d\n", tmp, mode, p->ID);
+                        fclose(tmpLogin);
+                    }
+                }
+            } while (strlen(p->category) > MaxCategorSymbol);
+        }
+        else {
+            p->category = "Высшая";
+            registration();
+        }
+        *head = p;
+    } while (check == true);
+}*/
