@@ -68,7 +68,7 @@ int main() {
             if ((ID = AuthFunction(2)) != 0) user_menu(ID);
             break;
         case '3':
-            if ((ID = AuthFunction(3)) != 0) regist_menu();
+            if ((ID = AuthFunction(3)) != 0) regist_menu(ID);
             break;
         case '4':
             registration();
