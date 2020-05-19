@@ -50,7 +50,7 @@ char* encryption(char*);
     //4 - англ буквы и цифры, - , _. 
 bool checkStr(char**, int);
 char* writeStr(int);
-char* readFromFile(FILE);
+char* readFromFile(FILE*);
 //приводит строку в нужную форму (первая букву в верхнем регистре, а остальные в нижнем)
 char* strconv(char*);
 //считывание информации в структуры с файла
@@ -61,16 +61,16 @@ void readingDataAccount(Accounts**, FILE*);
 //перезапись структуры в файл:
     //вывод в файл одного врача (повторение)
 void fprintfDoc(Doctors**, FILE*);
-void rewriteDoc(Doctors**, FILE*);
+FILE* rewriteDoc(Doctors**, FILE*);
 //вывод в файл данных одного врача (повторение)
 void fprintfAccount(Accounts**, FILE*);
-void rewriteAccount(Accounts**, FILE*);
+FILE* rewriteAccount(Accounts**, FILE*);
 //вывод в файл одного клиента (повторение)
 void fprintfCust(Customers**, FILE*);
-void rewriteCust(Customers**, FILE*);
+FILE* rewriteCust(Customers**, FILE*);
 //вывод в файл одно обращение (повторение)
 void fprintfApp(Appeals**, FILE*);
-void rewriteApp(Appeals**, FILE*);
+FILE* rewriteApp(Appeals**, FILE*);
 //сравнение введённых данных с файло для проверки наличия пользователя
 bool compare(char**, FILE*, int);
 
@@ -287,8 +287,11 @@ bool checkStr(char** str,int mode) {
     }
     if (check == true) return true;
     else {
-        system("pause");
-        system("cls");
+        if (strlen(*str) == 0);
+        else {
+            system("pause");
+            system("cls");
+        }
         return false;
     }
 }
@@ -525,7 +528,7 @@ void fprintfDoc(Doctors** p,  FILE* File) {
     fprintf(File, "%s ", (*p)->specialty);
     fprintf(File, "%s\n", (*p)->category);
 }
-void rewriteDoc(Doctors** head, FILE* File) {
+FILE* rewriteDoc(Doctors** head, FILE* File) {
     Doctors* p = NULL;
     if (File != NULL) {
         fclose(File);
@@ -544,6 +547,7 @@ void rewriteDoc(Doctors** head, FILE* File) {
             } while (p != NULL);
         }
     }
+    return File;
 }
 //вывод в файл данных одного врача (повторение)
 void fprintfAccount(Accounts** p, FILE* File) {;
@@ -552,7 +556,7 @@ void fprintfAccount(Accounts** p, FILE* File) {;
     fprintf(File, "%d ", (*p)->mode ^ 225);
     fprintf(File, "%d\n", (*p)->IDdoc ^ 225);
 }
-void rewriteAccount(Accounts** head, FILE* File) {
+FILE* rewriteAccount(Accounts** head, FILE* File) {
     Accounts* p = *head;
     if (File != NULL) {
         fclose(File);
@@ -571,6 +575,7 @@ void rewriteAccount(Accounts** head, FILE* File) {
             } while (p != NULL);
         }
     }
+    return File;
 }
     //вывод в файл одного клиента (повторение)
 void fprintfCust(Customers** p, FILE* File) {
@@ -582,7 +587,7 @@ void fprintfCust(Customers** p, FILE* File) {
     fprintf(File, "%d ", (*p)->dateBirthday.month);
     fprintf(File, "%d\n", (*p)->dateBirthday.year);
 }
-void rewriteCust(Customers** head, FILE* File) {
+FILE* rewriteCust(Customers** head, FILE* File) {
     Customers* p = NULL;
     if (File != NULL) {
         fclose(File);
@@ -601,6 +606,7 @@ void rewriteCust(Customers** head, FILE* File) {
             } while (p != NULL);
         }
     }
+    return File;
 }
 //вывод в файл одно обращение (повторение)
 void fprintfApp(Appeals** p, FILE* File) {
@@ -613,7 +619,7 @@ void fprintfApp(Appeals** p, FILE* File) {
     fprintf(File, "%s ", (*p)->diagnosis);
     fprintf(File, "%d\n", (*p)->costOfTreatment);
 }
-void rewriteApp(Appeals** head, FILE* File) {
+FILE* rewriteApp(Appeals** head, FILE* File) {
     Appeals* p = NULL;
     if (File != NULL) {
         fclose(File);
@@ -632,6 +638,7 @@ void rewriteApp(Appeals** head, FILE* File) {
             } while (p != NULL);
         }
     }
+    return File;
 }
     //сравнение введённых данных с файло для проверки наличия пользователя
 bool compare(char** str, FILE* File, int mode) {
@@ -694,7 +701,7 @@ int AuthFunction(int mode) {
                 printf("\n\t\tРегистрация главврача\n\t* * * * * * * * * * * * * * *\n\n");
                 pushDoc(&headDoc, DoctorsFile);
                 if (DoctorsFile != NULL) {
-                    rewriteDoc(&headDoc, DoctorsFile);
+                    DoctorsFile = rewriteDoc(&headDoc, DoctorsFile);
                     fclose(DoctorsFile);
                     memset(headDoc, 0, sizeof(Doctors));
                     free(headDoc);
@@ -702,9 +709,9 @@ int AuthFunction(int mode) {
             }
         }
         do {
-            check = true;
             EscCheck = false;
             do {
+                check = true;
                 printf("\n\t\tАвторизация\n\t* * * * * * * * * * * * * * *\n\n");
                 printf("  Введите логин: ");
                 inputLogin = writeStr(0);
@@ -726,9 +733,9 @@ int AuthFunction(int mode) {
                     }
                 }
             } while (EscCheck == false && check == false);
-            check = true;
             if (EscCheck == false) {
                 do {
+                    check = true;
                     system("cls");
                     printf("\n\t\tАвторизация\n\t* * * * * * * * * * * * * * *\n\n");
                     printf("  Введите логин: ");
@@ -785,13 +792,14 @@ void registration() {
     bool EscCheck = false, check = true;
     char* inputLogin = NULL, * inputPassword = NULL;
     EscCheck = false;
-    authFile = fopen("Authentification.txt", "a+");
+    authFile = fopen("Authentification.txt", "a+");    
     if (authFile == NULL) {
         printf("\n\tОшибка открытия файла!\n");
     }
     else {
         check = true;
         do {
+            system("cls");
             printf("\n\t\tРегистрация\n\t* * * * * * * * * * * * * * *\n\n");
             printf("  Введите логин: ");
             inputLogin = writeStr(0);
@@ -850,9 +858,10 @@ void registration() {
                                     system("cls");
                                     printf("\n\t\tРегистрация\n\t* * * * * * * * * * * * * * *\n\n");
                                     printf("  Введите логин: ");
-                                    printf("%s\n", inputLogin);
+                                    printf("%s\n", encryption(inputLogin));
                                     printf("  Введите пароль: ");
                                     inputPassword = writeStr(0);
+                                    encryption(inputLogin);
                                     if (strcmp(inputPassword, "") == 0) {
                                         EscCheck = true;
                                         check = true;
@@ -882,6 +891,7 @@ void registration() {
                             }
                             fseek(regFile, poz, SEEK_SET);
                             inputPassword = encryption(inputPassword);
+                            fseek(authFile, 0, SEEK_END);
                             fprintf(authFile, "%s %s %s ", inputLogin, inputPassword, readFromFile(regFile));
                             fprintf(authFile, "%s\n", readFromFile(regFile));
 
@@ -901,6 +911,7 @@ void registration() {
                 else printf("\n\tОшибка закрытия файла!\n");
             }
         }
+        fclose(authFile);
     }
     if (EscCheck == true) system("cls");
 }
@@ -1021,11 +1032,11 @@ void dataTableCust(Customers** head) {
     p = *head;
     char tmpDay[3], tmpMouth[3], tmp[3];
     system("cls");
-    puts("    **********************************************************************");
-    puts("    |      |                |           |                |               |");
-    puts("    |  ID  |     Фамилия    |    Имя    |    Отчество    | Дата рождения |");
-    puts("    |      |                |           |                |               |");
-    puts("    **********************************************************************");
+    puts("    ****************************************************************************");
+    puts("    |       |                  |             |                  |               |");
+    puts("    |   ID  |      Фамилия     |     Имя     |     Отчество     | Дата рождения |");
+    puts("    |       |                  |             |                  |               |");
+    puts("    ****************************************************************************");
     while (p != NULL) {
         if (p->dateBirthday.day < 10) {
             memset(tmpDay, 0, sizeof(tmpDay));
@@ -1039,8 +1050,8 @@ void dataTableCust(Customers** head) {
             strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
         }
         else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
-        printf("    |%-6d|%-16s|%-11s|%-16s|  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+        printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         p = p->prev;
     }
     printf("\n");
@@ -1050,12 +1061,12 @@ void dataTableApp(Appeals** head) {
     Appeals* p = NULL;
     p = *head;
     char tmpDay[3], tmpMonth[3], tmp[3];
-    puts("    ***********************************************************************************************************************");
-    puts("    |           |         |          |             |                                                  |                   |");
-    puts("    |   Номер   |    ID   |    ID    | Дата приёма |                     Диагноз                      | Стоимость лечения |");
-    puts("    | обращения | Доктора | Пациента |             |                                                  |                   |");
-    puts("    |           |         |          |             |                                                  |                   |");
-    puts("    ***********************************************************************************************************************");
+    puts("    ********************************************************************************************************************************");
+    puts("    |             |           |            |             |                                                    |                    |");
+    puts("    |    Номер    |     ID    |     ID     | Дата приёма |                      Диагноз                       |  Стоимость лечения |");
+    puts("    |  обращения  |  Доктора  |  Пациента  |             |                                                    |                    |");
+    puts("    |             |           |            |             |                                                    |                    |");
+    puts("    ********************************************************************************************************************************");
     while (p != NULL) {
         if (p->dateAppeal.day < 10) {
             memset(tmpDay, 0, sizeof(tmpDay));
@@ -1069,8 +1080,8 @@ void dataTableApp(Appeals** head) {
             strcat(tmpMonth, _itoa(p->dateAppeal.month, tmp, 10));
         }
         else strcpy(tmpMonth, _itoa(p->dateAppeal.month, tmp, 10));
-        printf("    |%-11d|%-9d|%-10d|  %-2s.%-2s.%-d |%-50s|%13d руб. |\n", p->NumApp, p->IDdoc, p->IDcust, tmpDay, tmpMonth, p->dateAppeal.year, p->diagnosis, p->costOfTreatment);
-        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+        printf("    | %-11d | %-9d | %-10d |  %-2s.%-2s.%-d | %-50s | %13d руб. |\n", p->NumApp, p->IDdoc, p->IDcust, tmpDay, tmpMonth, p->dateAppeal.year, p->diagnosis, p->costOfTreatment);
+        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         p = p->prev;
     }
     printf("\n");
@@ -1212,40 +1223,42 @@ void pushDoc(Doctors** head, FILE* File) {
                     system("cls");
                 }
                 checkString = false;
-                do {
-                    system("cls");
-                    printf("  Введите фамилию: %s\n", p->surname);
-                    printf("  Введите имя: %s\n", p->name);
-                    printf("  Введите отчество: %s\n", p->middleName);
-                    printf("  Введите специальность: %s\n", p->specialty);
-                    printf("  Введите категорию: %s\n\n", p->category);
-                    printf("  Введите логин медработника: ");
-                    char* tmp = writeStr(0);
-                    checkString = checkStr(&tmp, 4);
-                    if (strlen(tmp) > MaxLogSymbol || strlen(tmp) < MinLogSymbol) {
-                        printf("\n\tВозможный размер логина от %d до %d символов!\n\n", MinLogSymbol, MaxLogSymbol);
-                        system("pause");
+                if (check == false) {
+                    do {
                         system("cls");
-                    }
-                    else if (checkString == false);
-                    else {
-                        tmpLogin = fopen("RegFile.txt", "a+");
-                        if (tmpLogin == NULL) {
-                            printf("\n\tОшибка создания / открытия файла!\n\n");
+                        printf("  Введите фамилию: %s\n", p->surname);
+                        printf("  Введите имя: %s\n", p->name);
+                        printf("  Введите отчество: %s\n", p->middleName);
+                        printf("  Введите специальность: %s\n", p->specialty);
+                        printf("  Введите категорию: %s\n\n", p->category);
+                        printf("  Введите логин медработника: ");
+                        char* tmp = writeStr(0);
+                        checkString = checkStr(&tmp, 4);
+                        if (strlen(tmp) > MaxLogSymbol || strlen(tmp) < MinLogSymbol) {
+                            printf("\n\tВозможный размер логина от %d до %d символов!\n\n", MinLogSymbol, MaxLogSymbol);
                             system("pause");
                             system("cls");
                         }
+                        else if (checkString == false);
                         else {
-                            if (strcmp(p->specialty, "Медрегистратор") == 0) {
-                                mode = 3;
+                            tmpLogin = fopen("RegFile.txt", "a+");
+                            if (tmpLogin == NULL) {
+                                printf("\n\tОшибка создания / открытия файла!\n\n");
+                                system("pause");
+                                system("cls");
                             }
-                            else if (strcmp(p->category, "Высшая") == 0) mode = 1;
-                            else mode = 2;
-                            fprintf(tmpLogin, "%s %d %d\n", encryption(tmp), mode ^ 225, p->ID ^ 225);
-                            fclose(tmpLogin);
+                            else {
+                                if (strcmp(p->specialty, "Медрегистратор") == 0) {
+                                    mode = 3;
+                                }
+                                else if (strcmp(p->category, "Высшая") == 0) mode = 1;
+                                else mode = 2;
+                                fprintf(tmpLogin, "%s %d %d\n", encryption(tmp), mode ^ 225, p->ID ^ 225);
+                                fclose(tmpLogin);
+                            }
                         }
-                    }
-                } while (strlen(p->category) > MaxCategorSymbol || checkString == false);
+                    } while (strlen(p->category) > MaxCategorSymbol || checkString == false);
+                }
             }
             else {
                 p->category = "Высшая";
@@ -1291,6 +1304,7 @@ void pushCust(Customers** head, FILE* File) {
         }
         checkString = false;
         do {
+            system("cls");
             printf("Введите фамилию: ");
             p->surname = strconv(writeStr(0));
             if (strlen(p->surname) > MaxSecondNameSymbol) {
@@ -1303,6 +1317,8 @@ void pushCust(Customers** head, FILE* File) {
         if (strlen(p->surname) == 0) p->surname = "-";
         checkString = false;
         do {
+            system("cls");
+            printf("Введите фамилию: %s\n", p->surname);
             printf("Введите имя: ");
             p->name = strconv(writeStr(0));
             if (strlen(p->name) > MaxNameSymbol) {
@@ -1315,6 +1331,9 @@ void pushCust(Customers** head, FILE* File) {
         if (strlen(p->name) == 0) p->name = "-";
         checkString = false;
         do {
+            system("cls");
+            printf("Введите фамилию: %s\n", p->surname);
+            printf("Введите имя: %s\n", p->name);
             printf("Введите отчество: ");
             p->middleName = strconv(writeStr(0));
             if (strlen(p->middleName) > MaxSecondNameSymbol) {
@@ -1330,6 +1349,10 @@ void pushCust(Customers** head, FILE* File) {
         checkString = false;
         do {
             do {
+                system("cls");
+                printf("Введите фамилию: %s\n", p->surname);
+                printf("Введите имя: %s\n", p->name);
+                printf("Введите отчество: %s\n", p->middleName);
                 printf("Введите год: ");
                 tmp = writeStr(0);
                 checkString = checkStr(&tmp, 1);
@@ -1346,6 +1369,11 @@ void pushCust(Customers** head, FILE* File) {
         do {
             checkString = false;
             do {
+                system("cls");
+                printf("Введите фамилию: %s\n", p->surname);
+                printf("Введите имя: %s\n", p->name);
+                printf("Введите отчество: %s\n", p->middleName);
+                printf("Введите год: %d\n", p->dateBirthday.year);
                 printf("Введите месяц: ");
                 tmp = writeStr(0);
                 checkString = checkStr(&tmp, 1);
@@ -1364,6 +1392,12 @@ void pushCust(Customers** head, FILE* File) {
         do {
             checkString = false;
             do {
+                system("cls");
+                printf("Введите фамилию: %s\n", p->surname);
+                printf("Введите имя: %s\n", p->name);
+                printf("Введите отчество: %s\n", p->middleName);
+                printf("Введите год: %d\n", p->dateBirthday.year);
+                printf("Введите месяц: %d\n", p->dateBirthday.month);
                 printf("Введите день: ");
                 tmp = writeStr(0);
                 checkString = checkStr(&tmp, 1);
@@ -1426,11 +1460,11 @@ void pushCust(Customers** head, FILE* File) {
     }while (check == true);
 } 
 void PushAppealCust(Appeals** headApp, Customers** headCust, FILE* FileApp, FILE* FileCust, int ID) {
-    char* surname, * name, * middleName,* tmp = NULL;
+    char* surname = NULL, * name = NULL, * middleName = NULL,* tmp = NULL;
     int day, month, year;
     Appeals* pApp = NULL;
     Customers* pCust = NULL;
-    bool check = false, checkCompare, checkString;
+    bool check = false, checkCompare, checkString, checkEsc = false;
     const time_t timer = time(NULL);
     struct tm* u = localtime(&timer);
     pApp = NULL;
@@ -1464,201 +1498,217 @@ void PushAppealCust(Appeals** headApp, Customers** headCust, FILE* FileApp, FILE
         do {
             printf("Введите фамилию: ");
             surname = strconv(writeStr(0));
-            if (strlen(surname) > MaxSecondNameSymbol) {
+            if (strcmp(surname, "EscMode") == 0) checkEsc = true;
+            else if (strlen(surname) > MaxSecondNameSymbol) {
                 printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
                 system("pause");
                 system("cls");
             }
-            checkString = checkStr(&surname, 2);
+            if (strlen(surname) == 0) surname = "-";
+            else checkString = checkStr(&surname, 2);
         } while (strlen(surname) > MaxSecondNameSymbol || checkString == false);
         checkString = false;
-        do {
-            system("cls");
-            printf("\tВвод данных пациента:\n");
-            printf("Введите фамилию: %s\n", surname);
-            printf("Введите имя: ");
-            name = strconv(writeStr(0));
-            if (strlen(name) > MaxNameSymbol) {
-                printf("\tМаксимальный размер строки %d символов\n", MaxNameSymbol);
-                system("pause");
-                system("cls");
-            }
-            checkString = checkStr(&name, 2);
-        } while (strlen(name) > MaxNameSymbol || checkString == false);
-        checkString = false;
-        do {
-            system("cls");
-            printf("\tВвод данных пациента:\n");
-            printf("Введите фамилию: %s\n", surname);
-            printf("Введите имя: %s\n", name);
-            printf("Введите отчество: ");
-            middleName = strconv(writeStr(0));
-            if (strlen(middleName) > MaxSecondNameSymbol) {
-                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
-                system("pause");
-                system("cls");
-            }
-            checkString = checkStr(&middleName, 2);
-        } while (strlen(middleName) > MaxSecondNameSymbol || checkString == false);
-        checkString = false;
-        do {
+        if (checkEsc == false) {
             do {
                 system("cls");
                 printf("\tВвод данных пациента:\n");
                 printf("Введите фамилию: %s\n", surname);
-                printf("Введите имя: %s\n", name);
-                printf("Введите отчество: %s\n", middleName);
-                printf("Введите год: ");
-                tmp = writeStr(0);
-                checkString = checkStr(&tmp, 1);
-            } while (checkString == false);
-            year = atoi(tmp);
-            if (year <= 0 || year > u->tm_year + 1900 || year < 1900) {
-                printf("\tНекорректное значение\n");
-                system("pause");
-                system("cls");
-            }
-            else check = true;
-        } while (check == false);
-        check = false;
-        checkString = false;
-        do {
-            do {
-                system("cls");
-                printf("\tВвод данных пациента:\n");
-                printf("Введите фамилию: %s\n", surname);
-                printf("Введите имя: %s\n", name);
-                printf("Введите отчество: %s\n", middleName);
-                printf("Введите год: %d\n", year);
-                printf("Введите месяц: ");
-                tmp = writeStr(0);
-                checkString = checkStr(&tmp, 1);
-            } while (checkString == false);
-            month = atoi(tmp);
-            u->tm_mon = u->tm_mon + 1;
-            if (month <= 0 || month > 12 || (month > u->tm_mon && year == 2020)) {
-                printf("\tНекорректное значение\n");
-                system("pause");
-                system("cls");
-            }
-            else check = true;
-        } while (check == false);
-        check = false;
-        bool checkDay = false;
-        checkString = false;
-        do {
-            do {
-                system("cls");
-                printf("\tВвод данных пациента:\n");
-                printf("Введите фамилию: %s\n", surname);
-                printf("Введите имя: %s\n", name);
-                printf("Введите отчество: %s\n", middleName);
-                printf("Введите год: %d\n", year);
-                printf("Введите месяц: %d\n", month);
-                printf("Введите день: ");
-                tmp = writeStr(0);
-                checkString = checkStr(&tmp, 1);
-            } while (checkString == false);
-            day = atoi(tmp);
-            if (u->tm_mon == month && year == 2020 && day > u->tm_mday) { //прверка на ошибку завтрашнего дня
-                checkDay = true;
-            }
-            else checkDay = false;
-            check = false;
-            if (month == 2 && year % 4 == 0 || checkDay == true) {
-                if (day <= 0 || day > 29 || checkDay == true) {
-                    printf("\tНекорректное значение\n");
+                printf("Введите имя: ");
+                name = strconv(writeStr(0));
+                if (strcmp(name, "EscMode") == 0) checkEsc = true;
+                else if (strlen(name) > MaxNameSymbol) {
+                    printf("\tМаксимальный размер строки %d символов\n", MaxNameSymbol);
                     system("pause");
                     system("cls");
                 }
-                else check = true;
-            }
-            else if (month == 2 && year % 4 != 0) {
-                if (day <= 0 || day > 28) {
-                    printf("\tНекорректное значение\n");
-                    system("pause");
-                    system("cls");
-                }
-                else check = true;
-            }
-            else if (month == 4 || month == 6 || month == 9 || month == 11) {
-                if (day <= 0 || day > 30) {
-                    printf("\tНекорректное значение\n");
-                    system("pause");
-                    system("cls");
-                }
-                else check = true;
-            }
-            else {
-                if (day <= 0 || day > 31) {
-                    printf("\tНекорректное значение\n");
-                    system("pause");
-                    system("cls");
-                }
-                else check = true;
-            }
-        } while (check == false);
-    } while (check == false);
-    check = false;
-    pCust = *headCust;
-    do {
-        if (strcmp(pCust->name, name) == 0 && strcmp(pCust->surname, surname) == 0 && strcmp(pCust->middleName, middleName) == 0 && pCust->dateBirthday.day == day && pCust->dateBirthday.month == month && pCust->dateBirthday.year == year) {
-            printf("\tДанные приняты\n");
-            system("pause");
-            system("cls");
-            if (*headApp == NULL) {
-                pApp = malloc(sizeof(Appeals));
-                if ((pApp = malloc(sizeof(Appeals))) == NULL) {
-                    printf("\tОшибка выделения памяти для стека!\n");
-                }
-                pApp->NumApp = 1;
-                pApp->prev = NULL;
-            }
-            else {
-                int count = (*headApp)->NumApp;
-                pApp = *headApp;
+                if (strlen(name) == 0) name = "-";
+                else checkString = checkStr(&name, 2);
+            } while (strlen(name) > MaxNameSymbol || checkString == false);
+            checkString = false;
+            if (checkEsc == false) {
                 do {
-                    if (pApp->NumApp > count) {
-                        count = pApp->NumApp;
+                    system("cls");
+                    printf("\tВвод данных пациента:\n");
+                    printf("Введите фамилию: %s\n", surname);
+                    printf("Введите имя: %s\n", name);
+                    printf("Введите отчество: ");
+                    middleName = strconv(writeStr(0));
+                    if (strcmp(middleName, "EscMode") == 0) checkEsc = true;
+                    else if (strlen(middleName) > MaxSecondNameSymbol) {
+                        printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                        system("pause");
+                        system("cls");
                     }
-                    pApp = pApp->prev;
-                } while (pApp != NULL);
-                pApp = *headApp;
-                pApp = malloc(sizeof(Appeals));
-                pApp->prev = *headApp;
-                pApp->NumApp = count + 1;
+                    if (strlen(middleName) == 0) middleName = "-";
+                    else checkString = checkStr(&middleName, 2);
+                } while (strlen(middleName) > MaxSecondNameSymbol || checkString == false);
+                checkString = false;
+                if (checkEsc == false) {
+                    do {
+                        do {
+                            system("cls");
+                            printf("\tВвод данных пациента:\n");
+                            printf("Введите фамилию: %s\n", surname);
+                            printf("Введите имя: %s\n", name);
+                            printf("Введите отчество: %s\n", middleName);
+                            printf("Введите год: ");
+                            tmp = writeStr(0);
+                            checkString = checkStr(&tmp, 1);
+                        } while (checkString == false);
+                        year = atoi(tmp);
+                        if (year <= 0 || year > u->tm_year + 1900 || year < 1900) {
+                            printf("\tНекорректное значение\n");
+                            system("pause");
+                            system("cls");
+                        }
+                        else check = true;
+                    } while (check == false);
+                    check = false;
+                    checkString = false;
+                    if (checkEsc == false) {
+                        do {
+                            do {
+                                system("cls");
+                                printf("\tВвод данных пациента:\n");
+                                printf("Введите фамилию: %s\n", surname);
+                                printf("Введите имя: %s\n", name);
+                                printf("Введите отчество: %s\n", middleName);
+                                printf("Введите год: %d\n", year);
+                                printf("Введите месяц: ");
+                                tmp = writeStr(0);
+                                checkString = checkStr(&tmp, 1);
+                            } while (checkString == false);
+                            month = atoi(tmp);
+                            u->tm_mon = u->tm_mon + 1;
+                            if (month <= 0 || month > 12 || (month > u->tm_mon && year == 2020)) {
+                                printf("\tНекорректное значение\n");
+                                system("pause");
+                                system("cls");
+                            }
+                            else check = true;
+                        } while (check == false);
+                        check = false;
+                        bool checkDay = false;
+                        checkString = false;
+                        if (checkEsc == false) {
+                            do {
+                                do {
+                                    system("cls");
+                                    printf("\tВвод данных пациента:\n");
+                                    printf("Введите фамилию: %s\n", surname);
+                                    printf("Введите имя: %s\n", name);
+                                    printf("Введите отчество: %s\n", middleName);
+                                    printf("Введите год: %d\n", year);
+                                    printf("Введите месяц: %d\n", month);
+                                    printf("Введите день: ");
+                                    tmp = writeStr(0);
+                                    checkString = checkStr(&tmp, 1);
+                                } while (checkString == false);
+                                day = atoi(tmp);
+                                if (u->tm_mon == month && year == 2020 && day > u->tm_mday) {
+                                    checkDay = true;
+                                }
+                                else checkDay = false;
+                                check = false;
+                                if (month == 2 && year % 4 == 0 || checkDay == true) {
+                                    if (day <= 0 || day > 29 || checkDay == true) {
+                                        printf("\tНекорректное значение\n");
+                                        system("pause");
+                                        system("cls");
+                                    }
+                                    else check = true;
+                                }
+                                else if (month == 2 && year % 4 != 0) {
+                                    if (day <= 0 || day > 28) {
+                                        printf("\tНекорректное значение\n");
+                                        system("pause");
+                                        system("cls");
+                                    }
+                                    else check = true;
+                                }
+                                else if (month == 4 || month == 6 || month == 9 || month == 11) {
+                                    if (day <= 0 || day > 30) {
+                                        printf("\tНекорректное значение\n");
+                                        system("pause");
+                                        system("cls");
+                                    }
+                                    else check = true;
+                                }
+                                else {
+                                    if (day <= 0 || day > 31) {
+                                        printf("\tНекорректное значение\n");
+                                        system("pause");
+                                        system("cls");
+                                    }
+                                    else check = true;
+                                }
+                            } while (check == false);
+                        }
+                    }
+                }
             }
-            pApp->IDdoc = ID;
-            pApp->IDcust = pCust->ID;
-            pApp->dateAppeal.year = u->tm_year + 1900;
-            pApp->dateAppeal.month = u->tm_mon;
-            pApp->dateAppeal.day = u->tm_mday;
-            checkString = false;
-            do {
-                printf("Введите диагноз пациента: ");
-                pApp->diagnosis = writeStr(0);
-                checkString = checkStr(&pApp->diagnosis, 3);
-            } while (strlen(pApp->diagnosis) > 50 || checkString == false);
-            checkString = false;
-            do {
-                do {
-                    system("cls");
-                    printf("Введите диагноз пациента: %s\n", pApp->diagnosis);
-                    printf("Введите стоимость лечения: ");
-                    tmp = writeStr(0);
-                    checkString = checkStr(&tmp, 1);
-                } while (checkString == false);
-                pApp->costOfTreatment = atoi(tmp);
+        }
+    } while (check == false && checkEsc == false);    
+    if (checkEsc == false) {
+        check = false;
+        pCust = *headCust;
+        do {
+            if (strcmp(pCust->name, name) == 0 && strcmp(pCust->surname, surname) == 0 && strcmp(pCust->middleName, middleName) == 0 && pCust->dateBirthday.day == day && pCust->dateBirthday.month == month && pCust->dateBirthday.year == year) {
+                printf("\tДанные приняты\n");
                 system("pause");
                 system("cls");
-            } while (pApp->costOfTreatment > 100000 || pApp->costOfTreatment < 0);
-            check = true;
-        }
-        pCust = pCust->prev;
-    } while (pCust != NULL);
-    *headApp = pApp;
-    if (check == false) printf("\tДанного пациента нет в базе данных! Обратитесь в регистратуру.\n");
-    else printf("\tВыполнено!\n");
+                if (*headApp == NULL) {
+                    pApp = malloc(sizeof(Appeals));
+                    if ((pApp = malloc(sizeof(Appeals))) == NULL) {
+                        printf("\tОшибка выделения памяти для стека!\n");
+                    }
+                    pApp->NumApp = 1;
+                    pApp->prev = NULL;
+                }
+                else {
+                    int count = (*headApp)->NumApp;
+                    pApp = *headApp;
+                    do {
+                        if (pApp->NumApp > count) {
+                            count = pApp->NumApp;
+                        }
+                        pApp = pApp->prev;
+                    } while (pApp != NULL);
+                    pApp = *headApp;
+                    pApp = malloc(sizeof(Appeals));
+                    pApp->prev = *headApp;
+                    pApp->NumApp = count + 1;
+                }
+                pApp->IDdoc = ID;
+                pApp->IDcust = pCust->ID;
+                pApp->dateAppeal.year = u->tm_year + 1900;
+                pApp->dateAppeal.month = u->tm_mon;
+                pApp->dateAppeal.day = u->tm_mday;
+                checkString = false;
+                do {
+                    printf("Введите диагноз пациента: ");
+                    pApp->diagnosis = writeStr(0);
+                    checkString = checkStr(&pApp->diagnosis, 3);
+                } while (strlen(pApp->diagnosis) > 50 || checkString == false);
+                checkString = false;
+                do {
+                    do {
+                        system("cls");
+                        printf("Введите диагноз пациента: %s\n", pApp->diagnosis);
+                        printf("Введите стоимость лечения: ");
+                        tmp = writeStr(0);
+                        checkString = checkStr(&tmp, 1);
+                    } while (checkString == false);
+                    pApp->costOfTreatment = atoi(tmp);
+                } while (pApp->costOfTreatment > 100000 || pApp->costOfTreatment < 0);
+                check = true;
+            }
+            pCust = pCust->prev;
+        } while (pCust != NULL);
+        *headApp = pApp;
+        if (check == false) printf("\tДанного пациента нет в базе данных! Обратитесь в регистратуру.\n");
+        else printf("\n\tВыполнено!\n");
+    }
 }
 //Удаление элемента из стека
 void popDoc(Doctors** head, Accounts** headAc) {    
@@ -1817,7 +1867,7 @@ void editDataDoc(Doctors** head) {
             printf("\n");
             printf("  Введите ID врача для редактирования: ");
             IDedit = writeStr(0);
-            if (strcmp(IDedit, "EscMode") == 0) checkEsc = true;
+            if (strcmp(IDedit, "EscMode") == 0 || strlen(IDedit) == 0) checkEsc = true;
         } while (checkStr(&IDedit, 1) == false && checkEsc == false);
         if (checkEsc == false) {
             p = *head;
@@ -1922,240 +1972,261 @@ void editDataDoc(Doctors** head) {
 void editDataCust(Customers** head) {
     dataTableCust(&headCust);
     printf("\n");
-    int IDedit, editChoice, a = 0;
-    bool checkTruth = false, check = false, checkString;
+    int editChoice, a = 0;
+    bool checkTruth = false, check = false, checkString, checkEsc = false;
     Customers* p = NULL;
-    char* tmp = NULL;
+    char* tmp = NULL,* IDedit;
     const time_t timer = time(NULL);
     struct tm* u = localtime(&timer);
-    printf("Введите ID клиента для редактирования: ");
-    scanf_s("%d", &IDedit);
-    p = *head;
-    while (p != NULL && checkTruth == false) {
-        if (p->ID == IDedit) {
-            checkTruth = true;
-        }
-        else {
-            p = p->prev;
-        }
-    }
-    if (checkTruth == false) {
-        system("cls");
-        printf("\tКлиента с таким ID не существует\n");
-        system("pause");
-    }
-    else {
-        system("cls");
-        while (a == 0) {
-            printf("\t1) Редактировать фамилию\n");
-            printf("\t2) Редактировать имя\n");
-            printf("\t3) Редактировать отчество\n");
-            printf("\t4) Редактировать дату рождения\n");
-            printf("\t5) Сохранение изменений\n\n");
-            editChoice = getc(stdin);
+    do {
+        do {
             system("cls");
-            switch (editChoice) {
-            case '1':
-                checkString = false;
-                do {
-                    printf("Введите фамилию: ");
-                    p->surname = writeStr(0);
-                    if (strlen(p->surname) > MaxSecondNameSymbol) {
-                        printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
-                        system("pause");
-                        system("cls");
-                    }
-                    checkString = checkStr(&p->surname, 2);
-                } while (strlen(p->surname) > MaxSecondNameSymbol || checkString == false);
-                printf("\tВыполнено\n");
+            dataTableDoc(&headDoc);
+            printf("\n");
+            printf("Введите ID клиента для редактирования: ");
+            IDedit = writeStr(0);
+            if (strcmp(IDedit, "EscMode") == 0 || strlen(IDedit) == 0) checkEsc = true;
+        } while (checkStr(&IDedit, 1) == false && checkEsc == false);
+        if (checkEsc == false) {
+            p = *head;
+            while (p != NULL && checkTruth == false) {
+                if (p->ID == atoi(IDedit)) {
+                    checkTruth = true;
+                }
+                else {
+                    p = p->prev;
+                }
+            }
+            if (checkTruth == false) {
+                system("cls");
+                printf("\tКлиента с таким ID не существует\n");
                 system("pause");
-                break;
-            case '2':
-                checkString = false;
-                do {
-                    printf("Введите имя: ");
-                    p->name = writeStr(0);
-                    if (strlen(p->name) > MaxNameSymbol) {
-                        printf("\tМаксимальный размер строки %d символов\n", MaxNameSymbol);
+            }
+            else {
+                system("cls");
+                while (a == 0) {
+                    printf("\t1) Редактировать фамилию\n");
+                    printf("\t2) Редактировать имя\n");
+                    printf("\t3) Редактировать отчество\n");
+                    printf("\t4) Редактировать дату рождения\n");
+                    printf("\t5) Сохранение изменений\n\n");
+                    editChoice = getc(stdin);
+                    system("cls");
+                    switch (editChoice) {
+                    case '1':
+                        checkString = false;
+                        do {
+                            printf("Введите фамилию: ");
+                            p->surname = writeStr(0);
+                            if (strlen(p->surname) > MaxSecondNameSymbol) {
+                                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                                system("pause");
+                                system("cls");
+                            }
+                            checkString = checkStr(&p->surname, 2);
+                        } while (strlen(p->surname) > MaxSecondNameSymbol || checkString == false);
+                        printf("\tВыполнено\n");
                         system("pause");
-                        system("cls");
-                    }
-                    checkString = checkStr(&p->name, 2);
-                } while (strlen(p->name) > MaxNameSymbol || checkString == false);
-                printf("\tВыполнено\n");
-                system("pause");
-                break;
-            case '3':
-                checkString = false;
-                do {
-                    printf("Введите отчество: ");
-                    p->middleName = writeStr(0);
-                    if (strlen(p->middleName) > MaxSecondNameSymbol) {
-                        printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                        break;
+                    case '2':
+                        checkString = false;
+                        do {
+                            printf("Введите имя: ");
+                            p->name = writeStr(0);
+                            if (strlen(p->name) > MaxNameSymbol) {
+                                printf("\tМаксимальный размер строки %d символов\n", MaxNameSymbol);
+                                system("pause");
+                                system("cls");
+                            }
+                            checkString = checkStr(&p->name, 2);
+                        } while (strlen(p->name) > MaxNameSymbol || checkString == false);
+                        printf("\tВыполнено\n");
                         system("pause");
-                        system("cls");
-                    }
-                    checkString = checkStr(&p->middleName, 2);
-                } while (strlen(p->middleName) > MaxSecondNameSymbol || checkString == false);
-                printf("\tВыполнено\n");
-                system("pause");
-                break;
-            case '4':
-                do {
-                    checkString = false;
-                    do {
-                        printf("Введите год: ");
-                        tmp = writeStr(0);
-                        checkString = checkStr(&tmp, 1);
-                    } while (checkString == false);
-                    p->dateBirthday.year = atoi(tmp);
-                    if (p->dateBirthday.year <= 0 || p->dateBirthday.year > u->tm_year + 1900 || p->dateBirthday.year < 1900) {
-                        printf("\tНекорректное значение\n");
+                        break;
+                    case '3':
+                        checkString = false;
+                        do {
+                            printf("Введите отчество: ");
+                            p->middleName = writeStr(0);
+                            if (strlen(p->middleName) > MaxSecondNameSymbol) {
+                                printf("\tМаксимальный размер строки %d символов\n", MaxSecondNameSymbol);
+                                system("pause");
+                                system("cls");
+                            }
+                            checkString = checkStr(&p->middleName, 2);
+                        } while (strlen(p->middleName) > MaxSecondNameSymbol || checkString == false);
+                        printf("\tВыполнено\n");
                         system("pause");
-                        system("cls");
-                    }
-                    else check = true;
-                } while (check == false);
-                check = false;
-                do {
-                    checkString = false;
-                    do {
-                        printf("Введите месяц: ");
-                        tmp = writeStr(0);
-                        checkString = checkStr(&tmp, 1);
-                    } while (checkString == false);
-                    p->dateBirthday.month = atoi(tmp);
-                    u->tm_mon = u->tm_mon + 1;
-                    if (p->dateBirthday.month <= 0 || p->dateBirthday.month > 12 || (p->dateBirthday.month > u->tm_mon&& p->dateBirthday.year == 2020)) {
-                        printf("\tНекорректное значение\n");
+                        break;
+                    case '4':
+                        do {
+                            checkString = false;
+                            do {
+                                printf("Введите год: ");
+                                tmp = writeStr(0);
+                                checkString = checkStr(&tmp, 1);
+                            } while (checkString == false);
+                            p->dateBirthday.year = atoi(tmp);
+                            if (p->dateBirthday.year <= 0 || p->dateBirthday.year > u->tm_year + 1900 || p->dateBirthday.year < 1900) {
+                                printf("\tНекорректное значение\n");
+                                system("pause");
+                                system("cls");
+                            }
+                            else check = true;
+                        } while (check == false);
+                        check = false;
+                        do {
+                            checkString = false;
+                            do {
+                                printf("Введите месяц: ");
+                                tmp = writeStr(0);
+                                checkString = checkStr(&tmp, 1);
+                            } while (checkString == false);
+                            p->dateBirthday.month = atoi(tmp);
+                            u->tm_mon = u->tm_mon + 1;
+                            if (p->dateBirthday.month <= 0 || p->dateBirthday.month > 12 || (p->dateBirthday.month > u->tm_mon && p->dateBirthday.year == 2020)) {
+                                printf("\tНекорректное значение\n");
+                                system("pause");
+                                system("cls");
+                            }
+                            else check = true;
+                        } while (check == false);
+                        check = false;
+                        bool checkDay = false;
+                        do {
+                            checkString = false;
+                            do {
+                                printf("Введите день: ");
+                                tmp = writeStr(0);
+                                checkString = checkStr(&tmp, 1);
+                            } while (checkString == false);
+                            p->dateBirthday.day = atoi(tmp);
+                            if (u->tm_mon == p->dateBirthday.month && p->dateBirthday.year == 2020 && p->dateBirthday.day > u->tm_mday) { //прверка на ошибку завтрашнего дня
+                                checkDay = true;
+                            }
+                            else checkDay = false;
+                            check = false;
+                            if (p->dateBirthday.month == 2 && p->dateBirthday.year % 4 == 0 || checkDay == true) {
+                                if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 29 || checkDay == true) {
+                                    printf("\tНекорректное значение\n");
+                                    system("pause");
+                                    system("cls");
+                                }
+                                else check = true;
+                            }
+                            else if (p->dateBirthday.month == 2 && p->dateBirthday.year % 4 != 0) {
+                                if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 28) {
+                                    printf("\tНекорректное значение\n");
+                                    system("pause");
+                                    system("cls");
+                                }
+                                else check = true;
+                            }
+                            else if (p->dateBirthday.month == 4 || p->dateBirthday.month == 6 || p->dateBirthday.month == 9 || p->dateBirthday.month == 11) {
+                                if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 30) {
+                                    printf("\tНекорректное значение\n");
+                                    system("pause");
+                                    system("cls");
+                                }
+                                else check = true;
+                            }
+                            else {
+                                if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 31) {
+                                    printf("\tНекорректное значение\n");
+                                    system("pause");
+                                    system("cls");
+                                }
+                                else check = true;
+                            }
+                        } while (check == false);
+                        printf("\tВыполнено\n");
                         system("pause");
-                        system("cls");
+                    case '5':
+                        a = 1;
+                        break;
                     }
-                    else check = true;
-                } while (check == false);
-                check = false;
-                bool checkDay = false;
-                do {
-                    checkString = false;
-                    do {
-                        printf("Введите день: ");
-                        tmp = writeStr(0);
-                        checkString = checkStr(&tmp, 1);
-                    } while (checkString == false);
-                    p->dateBirthday.day = atoi(tmp);
-                    if (u->tm_mon == p->dateBirthday.month && p->dateBirthday.year == 2020 && p->dateBirthday.day > u->tm_mday) { //прверка на ошибку завтрашнего дня
-                        checkDay = true;
-                    }
-                    else checkDay = false;
-                    check = false;
-                    if (p->dateBirthday.month == 2 && p->dateBirthday.year % 4 == 0 || checkDay == true) {
-                        if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 29 || checkDay == true) {
-                            printf("\tНекорректное значение\n");
-                            system("pause");
-                            system("cls");
-                        }
-                        else check = true;
-                    }
-                    else if (p->dateBirthday.month == 2 && p->dateBirthday.year % 4 != 0) {
-                        if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 28) {
-                            printf("\tНекорректное значение\n");
-                            system("pause");
-                            system("cls");
-                        }
-                        else check = true;
-                    }
-                    else if (p->dateBirthday.month == 4 || p->dateBirthday.month == 6 || p->dateBirthday.month == 9 || p->dateBirthday.month == 11) {
-                        if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 30) {
-                            printf("\tНекорректное значение\n");
-                            system("pause");
-                            system("cls");
-                        }
-                        else check = true;
-                    }
-                    else {
-                        if (p->dateBirthday.day <= 0 || p->dateBirthday.day > 31) {
-                            printf("\tНекорректное значение\n");
-                            system("pause");
-                            system("cls");
-                        }
-                        else check = true;
-                    }
-                } while (check == false);
-                printf("\tВыполнено\n");
-                system("pause");
-            case '5':
-                a = 1;
-                break;
+                }
             }
         }
-    }
+    }while (checkEsc == false && check == false);
     system("cls");
 }
 void editDataApp(Appeals** head) {
     dataTableApp(&headApp);
     printf("\n");
-    int IDedit, editChoice, a = 0;
-    bool checkTruth = false, check = false, checkString;
+    int editChoice, a = 0;
+    bool checkTruth = false, check = false, checkString = false, checkEsc = false;
     Appeals* p = NULL;
-    char* tmp = NULL;
+    char* tmp = NULL,* IDedit;
     const time_t timer = time(NULL);
     struct tm* u = localtime(&timer);
-    printf("Введите номер обращения для редактирования: ");
-    scanf_s("%d", &IDedit);
-    p = *head;
-    while (p != NULL && checkTruth == false) {
-        if (p->NumApp == IDedit) {
-            checkTruth = true;
-        }
-        else {
-            p = p->prev;
-        }
-    }
-    if (checkTruth == false) {
-        system("cls");
-        printf("\tОбращения с таким номером не существует\n");
-        system("pause");
-    }
-    else {
-        system("cls");
-        while (a == 0) {
-            printf("\t1) Редактировать диагноз\n");
-            printf("\t2) Редактировать стоимость лечения\n");
-            printf("\t3) Сохранение изменений\n\n");
-            editChoice = getc(stdin);
+    do {
+        do {
             system("cls");
-            switch (editChoice) {
-            case '1':
-                checkString = false;
-                do {
-                    printf("Введите диагноз пациента: ");
-                    p->diagnosis = writeStr(0);
-                    checkString = checkStr(&p->diagnosis, 3);
-                } while (strlen(p->diagnosis) > 50 || checkString == false);
-                printf("\tВыполнено\n");
+            dataTableApp(&headApp);
+            printf("\n");
+            printf("Введите номер обращения для редактирования: ");
+            IDedit = writeStr(0);
+            if (strcmp(IDedit, "EscMode") == 0 || strlen(IDedit) == 0) checkEsc = true;
+        } while (checkStr(&IDedit, 1) == false && checkEsc == false);
+        if (checkEsc == false) {
+            p = *head;
+            while (p != NULL && checkTruth == false) {
+                if (p->NumApp == atoi(IDedit)) {
+                    checkTruth = true;
+                }
+                else {
+                    p = p->prev;
+                }
+            }
+            if (checkTruth == false) {
+                system("cls");
+                printf("\tОбращения с таким номером не существует\n");
                 system("pause");
-                break;
-            case '2':
-                checkString = false;
-                do {
-                    do {
-                        printf("Введите стоимость лечения: ");
-                        tmp = writeStr(0);
-                        checkString = checkStr(&tmp, 1);
-                    } while (checkString == false);
-                    p->costOfTreatment = atoi(tmp);
-                    system("pause");
+            }
+            else {
+                system("cls");
+                while (a == 0) {
+                    printf("\t1) Редактировать диагноз\n");
+                    printf("\t2) Редактировать стоимость лечения\n");
+                    printf("\t3) Сохранение изменений\n\n");
+                    editChoice = getc(stdin);
                     system("cls");
-                } while (p->costOfTreatment > 100000 || p->costOfTreatment < 0);
-                printf("\tВыполнено\n");
-                system("pause");
-                break;
-            case '3':
-                a = 1;
-                break;
+                    switch (editChoice) {
+                    case '1':
+                        checkString = false;
+                        do {
+                            printf("Введите диагноз пациента: ");
+                            p->diagnosis = writeStr(0);
+                            checkString = checkStr(&p->diagnosis, 3);
+                        } while (strlen(p->diagnosis) > 50 || checkString == false);
+                        printf("\tВыполнено\n");
+                        system("pause");
+                        break;
+                    case '2':
+                        checkString = false;
+                        do {
+                            do {
+                                printf("Введите стоимость лечения: ");
+                                tmp = writeStr(0);
+                                checkString = checkStr(&tmp, 1);
+                            } while (checkString == false);
+                            p->costOfTreatment = atoi(tmp);
+                            system("pause");
+                            system("cls");
+                        } while (p->costOfTreatment > 100000 || p->costOfTreatment < 0);
+                        printf("\tВыполнено\n");
+                        system("pause");
+                        break;
+                    case '3':
+                        check = true;
+                        a = 1;
+                        break;
+                    }
+                }
             }
         }
-    }
+    } while (checkEsc == false && check == false);
     system("cls");
 }
 
@@ -2474,7 +2545,7 @@ void SearchMenuDoc(Doctors* head) {
 
 //сортировка данных врача
 void SortIDUpDoc(Doctors** head) {
-    int count = 0, tmp, Max = 0, min, f = 0;
+    int count = 0, tmp, Max = 0, min;
     Doctors* p = *head;
     tmp = p->ID;
     while (p != NULL) {
@@ -2486,13 +2557,11 @@ void SortIDUpDoc(Doctors** head) {
     tmp--;
     DoctorsHat();
     min = Max;
-    for (int i = 0; i < count - 1; i++) {
-        p = *head;       
-        f = 0;
+    for (int i = 0; i < count; i++) {
+        p = *head;  
         while (p != NULL) {
-            if (p->ID < Max - f + 1 && p->ID > tmp && p->ID < min) min = p->ID;
+            if (p->ID > tmp && p->ID < min) min = p->ID;
             p = p->prev;
-            f++;
         }
         tmp = min;
         p = *head;
@@ -2757,16 +2826,15 @@ void Task(Appeals** head) {
         }
         countD++;
     }
-    printf("Топ 5 самых частых дигнозов: \n\t1) %s\n\t2) %s\n\t3) %s\n\t4) %s\n\t5) %s\n", str1, str2, str3, str4, str5);
+    printf("Топ 5 самых частых диагнозов: \n\t1) %s\n\t2) %s\n\t3) %s\n\t4) %s\n\t5) %s\n", str1, str2, str3, str4, str5);
     system("pause");
     system("cls");
 }
 
 
-//РАБОТАЕТ
 
 
-//поиск для побращений
+//поиск пациентов
 void SearchIDCust(Customers* head) {
     bool checkString = false, checkEsc = false, check;
     Customers* p;
@@ -2973,12 +3041,68 @@ void SearchMiddleNameCust(Customers* head) {
         if (check == false) printf("\tПользователь не найден!\n");
     }
 }
-//////////////////////
-//сортировка по дате
 void SearchDateCust(Customers* head) {
-
+    bool checkEsc = false, check;
+    Customers* p;
+    int i = 0;
+    char tmpDay[3], tmpMouth[3], tmp[3], *year = NULL, *month = NULL,* day = NULL;
+    i = 0;
+    do {
+        dataTableCust(&head);
+        printf("  Введите год: ");
+        year = writeStr(0);
+        if (strcmp(year, "EscMode") == 0) checkEsc = true;
+    } while (checkStr(&year, 1) == false && checkEsc == false);
+    if (checkEsc == false) {
+        do {
+            dataTableCust(&head);
+            printf("  Введите год: %s\n", year);
+            printf("  Введите месяц: ");
+            month = writeStr(0);
+            if (strcmp(month, "EscMode") == 0) checkEsc = true;
+        } while (checkStr(&month, 1) == false && checkEsc == false);
+        if (checkEsc == false) {
+            do {
+                dataTableCust(&head);
+                printf("  Введите год: %s\n", year);
+                printf("  Введите месяц: %s\n", month);
+                printf("  Введите день: ");
+                day = writeStr(0);
+                if (strcmp(day, "EscMode") == 0) checkEsc = true;
+            } while (checkStr(&day, 1) == false && checkEsc == false);
+        }
+    }
+    if (checkEsc == false) {
+        p = head;
+        check = false;
+        do {
+            if (p->dateBirthday.year == atoi(year) && p->dateBirthday.month == atoi(month) && p->dateBirthday.day == atoi(day)) {
+                check = true;
+                i++;
+                if (i == 1) {
+                    system("cls");
+                    CustomersHat();
+                }
+                if (p->dateBirthday.day < 10) {
+                    memset(tmpDay, 0, sizeof(tmpDay));
+                    tmpDay[0] = '0';
+                    strcat(tmpDay, _itoa(p->dateBirthday.day, tmp, 10));
+                }
+                else strcpy(tmpDay, _itoa(p->dateBirthday.day, tmp, 10));
+                if (p->dateBirthday.month < 10) {
+                    memset(tmpMouth, 0, sizeof(tmpMouth));
+                    tmpMouth[0] = '0';
+                    strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
+                }
+                else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
+                printf("    |%-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+            }
+            p = p->prev;
+        } while (p != NULL);
+        if (check == false) printf("\n\tПользователь не найден!\n\n");
+    }
 }
-//////////////////////
 void SearchMenuCust(Customers* head) {
     char choice;
     while (1) {
@@ -3027,7 +3151,7 @@ void SearchMenuCust(Customers* head) {
 
 
 void SortIDUpCust(Customers** head) {
-    int count = 0, tmp, Max = 0, min, f = 0;
+    int count = 0, tmp, Max = 0, min;
     char tmpDay[3], tmpMouth[3], tmp3[3];
     Customers* p = *head;
     tmp = p->ID;
@@ -3040,13 +3164,11 @@ void SortIDUpCust(Customers** head) {
     tmp--;
     CustomersHat();
     min = Max;
-    for (int i = 0; i < count - 1; i++) {
+    for (int i = 0; i < count; i++) {
         p = *head;
-        f = 0;
         while (p != NULL) {
-            if (p->ID < Max - f + 1 && p->ID > tmp && p->ID < min) min = p->ID;
+            if (p->ID > tmp && p->ID < min) min = p->ID;
             p = p->prev;
-            f++;
         }
         tmp = min;
         p = *head;
@@ -3064,8 +3186,8 @@ void SortIDUpCust(Customers** head) {
                     strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
                 }
                 else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
-                printf("    |%-6d|%-16s|%-11s|%-16s|  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
             }
             p = p->prev;
         }
@@ -3107,8 +3229,8 @@ void SortIDDownCust(Customers** head) {
                     strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
                 }
                 else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
-                printf("    |%-6d|%-16s|%-11s|%-16s|  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
             }
             p = p->prev;
         }
@@ -3141,8 +3263,8 @@ void SortSurnameCust(Customers** head) {
                     strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
                 }
                 else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
-                printf("    |%-6d|%-16s|%-11s|%-16s|  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
             }
             p = p->prev;
         }
@@ -3175,8 +3297,8 @@ void SortNameCust(Customers** head) {
                     strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
                 }
                 else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
-                printf("    |%-6d|%-16s|%-11s|%-16s|  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
             }
             p = p->prev;
         }
@@ -3209,15 +3331,13 @@ void SortMiddleNameCust(Customers** head) {
                     strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
                 }
                 else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp, 10));
-                printf("    |%-6d|%-16s|%-11s|%-16s|  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
+                puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
             }
             p = p->prev;
         }
     }
 }
-///////////////////////////
-
 void SortDateDownCust(Customers** head) {
     int count = 0, tmp = 0, tmpM = 0, tmpD = 0, Max = 0, MaxM = 0, MaxD = 0, M = 0, D = 0;
     char tmpDay[3], tmpMouth[3], tmp3[3];
@@ -3230,7 +3350,7 @@ void SortDateDownCust(Customers** head) {
         count++;
     }
     tmp++;
-    M = tmpM++;//!!!!!
+    M = tmpM++;
     D = tmpD++;
     CustomersHat();
     for (int i = 0; i < count; i++) {
@@ -3277,119 +3397,14 @@ void SortDateDownCust(Customers** head) {
                         }
                         else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
                         printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
                     }
                     p = p->prev;
                 }
             }
         }
     }
-
 }
-void SortDateUpCust(Customers** head) {
-    /*int count = 0, tmp, tmpM = 0, tmpD = 0, Max = 0, MaxM = 0, MaxD = 0, M = 0, D = 0, min, minM, minD, f = 0;
-    char tmpDay[3], tmpMouth[3], tmp3[3];
-    Customers* p = *head;
-    tmp = p->dateBirthday.year;
-    tmpM = p->dateBirthday.month;
-    tmpD = p->dateBirthday.day;
-    while (p != NULL) {
-        if (p->dateBirthday.year < tmp) tmp = p->dateBirthday.year;        
-        if (p->dateBirthday.year > Max) Max = p->dateBirthday.year;
-        if (p->dateBirthday.month < tmpM) tmpM = p->dateBirthday.month;        
-        if (p->dateBirthday.month > MaxM) MaxM = p->dateBirthday.month;        
-        if (p->dateBirthday.day < tmpD) tmpD = p->dateBirthday.day;        
-        if (p->dateBirthday.day > MaxD) MaxD = p->dateBirthday.day;
-        p = p->prev;
-        count++;
-    }
-    tmp--;
-    M = tmpM++;
-    D = tmpD++;
-    CustomersHat();
-    min = Max;
-    minM = MaxM;
-    minD = MaxD;
-    for (int i = 0; i < count - 1; i++) {
-        p = *head;
-        f = 0;
-        while (p != NULL) {
-            if (p->dateBirthday.year < Max - f + 1 && p->dateBirthday.year > tmp && p->dateBirthday.year < min) min = p->dateBirthday.year;
-            p = p->prev;
-            f++;
-        }
-        tmp = min;
-        p = *head;        
-        tmpM = M;
-        while (p != NULL) {
-            f = 0;
-            while (p != NULL) {
-                if(p->dateBirthday.year == min) if(p->dateBirthday.month < MaxM - f + 1 && p->dateBirthday.month > tmpM && p->dateBirthday.month < minM) minM = p->dateBirthday.month;
-                p = p->prev;
-                f++;
-            }
-            tmpM = minM;
-            p = *head;
-            tmpD = D;
-            while (p != NULL) {
-                f = 0;
-                while (p != NULL) {
-                    if(p->dateBirthday.year == min && p->dateBirthday.month == minM) if(p->dateBirthday.day < MaxD - f + 1 && p->dateBirthday.day > tmpD && p->dateBirthday.day < minD) minD = p->dateBirthday.day;
-                    p = p->prev;
-                    f++;
-                }
-                tmpD = minD;
-                p = *head;
-                while (p != NULL) {
-                    if (p->dateBirthday.year == min && p->dateBirthday.month == minM && p->dateBirthday.day == minD) {
-                        if (p->dateBirthday.day < 10) {
-                            memset(tmpDay, 0, sizeof(tmpDay));
-                            tmpDay[0] = '0';
-                            strcat(tmpDay, _itoa(p->dateBirthday.day, tmp3, 10));
-                        }
-                        else strcpy(tmpDay, _itoa(p->dateBirthday.day, tmp3, 10));
-                        if (p->dateBirthday.month < 10) {
-                            memset(tmpMouth, 0, sizeof(tmpMouth));
-                            tmpMouth[0] = '0';
-                            strcat(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
-                        }
-                        else strcpy(tmpMouth, _itoa(p->dateBirthday.month, tmp3, 10));
-                        printf("    | %-6d | %-16s | %-11s | %-16s |  %-2s.%-2s.%-d   |\n", p->ID, p->surname, p->name, p->middleName, tmpDay, tmpMouth, p->dateBirthday.year);
-                        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-                    }
-                    p = p->prev;
-                }
-                minD = MaxD;                
-            }
-            minM = MaxM;
-        }
-        min = Max;
-    }*/
-    ///*int count = 0, tmp;
-    //Customers* p = *head;
-    //while (p != NULL) {
-    //    p = p->prev;
-    //    count++;
-    //}
-    //p = *head;
-    //for (int f = 0; f < count; f++) {
-    //    for(int i = 0; i < count - 1; i++) {
-    //        if (p[i].dateBirthday.year > p[i + 1].dateBirthday.year) {
-    //            tmp = p[i].dateBirthday.year;
-    //            p[i].dateBirthday.year = p[i + 1].dateBirthday.year;
-    //            p[i + 1].dateBirthday.year = tmp;
-    //        }
-    //        else if (p[i].dateBirthday.year == p[i + 1].dateBirthday.year && p[i].dateBirthday.month > p[i + 1].dateBirthday.month) {
-    //            tmp = p[i].dateBirthday.year;
-    //            p[i].dateBirthday.year = p[i + 1].dateBirthday.year;
-    //            p[i + 1].dateBirthday.year = tmp;
-    //        }
-    //        else if 
-    //    }
-    //}*/
-}
-
-////////////////////////////
 void SortMenuCust(Customers* head) {
     Customers* p;
     char choice;
@@ -3402,9 +3417,8 @@ void SortMenuCust(Customers* head) {
         printf("\t3) Сортировка фамилий по алфавиту\n");
         printf("\t4) Сортировка имён по алфавиту\n");
         printf("\t5) Сортировка отчеств по алфавиту\n");
-        printf("\t6) Сортировка даты рождения по убыванию\n");
-        printf("\t7) Сортировка даты рождения по возрастанию\n");
-        printf("\t8) Выход\n\n");
+        printf("\t6) Сортировка по дате рождения\n");
+        printf("\t7) Выход\n\n");
         choice = _getch();
         switch (choice) {
         case '1':
@@ -3438,11 +3452,6 @@ void SortMenuCust(Customers* head) {
             system("pause");
             break;
         case '7':
-            system("cls");
-            SortDateUpCust(&head);
-            system("pause");
-            break;
-        case '8':
             return;
         }
 
@@ -3726,20 +3735,118 @@ void SortIDDownApp(Appeals** head) {
         }
     }
 }
-///////////////////////////
 void SortDateDownApp(Appeals** head) {
-
-}
-void SortDateUpApp(Appeals** head) {
-
-}
-void SortCoastUpApp(Appeals** head) {
-    
+    int count = 0, tmp = 0, tmpM = 0, tmpD = 0, Max = 0, MaxM = 0, MaxD = 0, M = 0, D = 0;
+    char tmpDay[3], tmpMonth[3], tmp3[3];
+    Appeals* p = *head;
+    while (p != NULL) {
+        if (p->dateAppeal.year > tmp) tmp = p->dateAppeal.year;
+        if (p->dateAppeal.month > tmpM) tmpM = p->dateAppeal.month;
+        if (p->dateAppeal.day > tmpD) tmpD = p->dateAppeal.day;
+        p = p->prev;
+        count++;
+    }
+    tmp++;
+    M = tmpM++;
+    D = tmpD++;
+    AppealsHat();
+    for (int i = 0; i < count; i++) {
+        p = *head;
+        Max = 0;
+        while (p != NULL) {
+            if (p->dateAppeal.year > Max && p->dateAppeal.year < tmp) Max = p->dateAppeal.year;
+            p = p->prev;
+        }
+        tmp = Max;
+        p = *head;
+        tmpM = M;
+        while (p != NULL) {
+            MaxM = 0;
+            while (p != NULL) {
+                if (p->dateAppeal.year == Max) if (p->dateAppeal.month > MaxM && p->dateAppeal.month < tmpM) MaxM = p->dateAppeal.month;
+                p = p->prev;
+            }
+            tmpM = MaxM;
+            p = *head;
+            tmpD = D;
+            while (p != NULL) {
+                MaxD = 0;
+                while (p != NULL) {
+                    if (p->dateAppeal.year == Max && p->dateAppeal.month == MaxM) {
+                        if (p->dateAppeal.day > MaxD && p->dateAppeal.day < tmpD) MaxD = p->dateAppeal.day;
+                    }
+                    p = p->prev;
+                }
+                tmpD = MaxD;
+                p = *head;
+                while (p != NULL) {
+                    if (p->dateAppeal.year == Max && p->dateAppeal.month == MaxM && p->dateAppeal.day == MaxD) {
+                        if (p->dateAppeal.day < 10) {
+                            memset(tmpDay, 0, sizeof(tmpDay));
+                            tmpDay[0] = '0';
+                            strcat(tmpDay, _itoa(p->dateAppeal.day, tmp3, 10));
+                        }
+                        else strcpy(tmpDay, _itoa(p->dateAppeal.day, tmp3, 10));
+                        if (p->dateAppeal.month < 10) {
+                            memset(tmpMonth, 0, sizeof(tmpMonth));
+                            tmpMonth[0] = '0';
+                            strcat(tmpMonth, _itoa(p->dateAppeal.month, tmp3, 10));
+                        }
+                        else strcpy(tmpMonth, _itoa(p->dateAppeal.month, tmp3, 10));
+                        printf("    |%-11d|%-9d|%-10d|  %-2s.%-2s.%-d |%-50s|%13d руб. |\n", p->NumApp, p->IDdoc, p->IDcust, tmpDay, tmpMonth, p->dateAppeal.year, p->diagnosis, p->costOfTreatment);
+                        puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                    }
+                    p = p->prev;
+                }
+            }
+        }
+    }
 }
 void SortCoastDownApp(Appeals** head) {
-    
+    int count = 0, tmp = 0, Max = 0, countP = 0;
+    char tmpDay[3], tmpMonth[3], tmp3[3];
+    Appeals* p;
+    p = *head;
+    while (p != NULL) {
+        if (p->costOfTreatment > tmp) tmp = p->costOfTreatment;
+        p = p->prev;
+        count++;
+    }
+    tmp++;
+    AppealsHat();
+    for (int i = 0; i < count; i++) {
+        p = *head;
+        Max = 0;
+        while (p != NULL) {
+            if (p->costOfTreatment > Max && p->costOfTreatment < tmp) Max = p->costOfTreatment;
+            p = p->prev;
+        }
+        tmp = Max;
+        p = *head;
+        if(countP == 0) {
+            while (p != NULL) {
+                if (p->costOfTreatment == Max) {
+                    if (Max == 0) countP++;
+                    if (p->dateAppeal.day < 10) {
+                        memset(tmpDay, 0, sizeof(tmpDay));
+                        tmpDay[0] = '0';
+                        strcat(tmpDay, _itoa(p->dateAppeal.day, tmp3, 10));
+                    }
+                    else strcpy(tmpDay, _itoa(p->dateAppeal.day, tmp3, 10));
+                    if (p->dateAppeal.month < 10) {
+                        memset(tmpMonth, 0, sizeof(tmpMonth));
+                        tmpMonth[0] = '0';
+                        strcat(tmpMonth, _itoa(p->dateAppeal.month, tmp3, 10));
+                    }
+                    else strcpy(tmpMonth, _itoa(p->dateAppeal.month, tmp3, 10));
+                    printf("    |%-11d|%-9d|%-10d|  %-2s.%-2s.%-d |%-50s|%13d руб. |\n", p->NumApp, p->IDdoc, p->IDcust, tmpDay, tmpMonth, p->dateAppeal.year, p->diagnosis, p->costOfTreatment);
+                    puts("    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+                }
+                p = p->prev;
+            }
+        }
+    }
 }
-////////////////////////////
 void SortMenuApp(Appeals** head) {
     Appeals* p;
     char choice;
@@ -3748,9 +3855,10 @@ void SortMenuApp(Appeals** head) {
         system("cls");
         dataTableApp(head);
         printf("\n\t1) Сортировка ID приёмов по убыванию\n");
-        printf("\t2) Сортировка ID приёмов  по возрастанию\n");
+        printf("\t2) Сортировка ID приёмов по возрастанию\n");
         printf("\t3) Сортировка по стоимости лечения\n");
-        printf("\t4) Выход\n\n");
+        printf("\t4) Сортировка по дате обращения\n");
+        printf("\t5) Выход\n\n");
         choice = _getch();
         switch (choice) {
         case '1':
@@ -3765,13 +3873,17 @@ void SortMenuApp(Appeals** head) {
             break;
         case '3':
             system("cls");
-            SortCoastUpApp(head);
+            SortCoastDownApp(head);
             system("pause");
             break;
         case '4':
+            system("cls");
+            SortDateDownApp(head);
+            system("pause");
+            break;
+        case '5':
             return;
         }
-
     }
 }
 
@@ -3794,12 +3906,18 @@ void ManageDataDoc(Doctors* head) {
     while (1) {
         switch (manage_menu()) {
         case '1':
-            if (headDoc == NULL) printf("\tДанные отсутствуют!\n");
+            if (headDoc == NULL) {
+                printf("\tДанные отсутствуют!\n");
+                system("pause");
+            }
             else SearchMenuDoc(head);
             system("cls");
             break;
         case '2':
-            if (headDoc == NULL) printf("\tДанные отсутствуют!\n");
+            if (headDoc == NULL) {
+                printf("\tДанные отсутствуют!\n");
+                system("pause");
+            }
             else SortMenuDoc(head);
             system("cls");
             break;
@@ -3812,15 +3930,20 @@ void ManageDataCust(Customers* head) {
     while (1) {
         switch (manage_menu()) {
         case '1':
-            if (headDoc == NULL) printf("\tДанные отсутствуют!\n");
+            if (headCust == NULL) {
+                printf("\tДанные отсутствуют!\n");
+                system("pause");
+            }
             else SearchMenuCust(head);
-
+            system("cls");
             break;
         case '2':
-            if (headDoc == NULL) printf("\tДанные отсутствуют!\n");
+            if (headCust == NULL) {
+                printf("\tДанные отсутствуют!\n");
+                system("pause");
+            }
             else SortMenuCust(head);
-            system("pause");
-            system("cls");
+            system("cls");            
             break;
         case '3':
             return;
@@ -3831,15 +3954,18 @@ void ManageDataApp(Appeals* head) {
     while (1) {
         switch (manage_menu()) {
         case '1':
-            if (headDoc == NULL) printf("\tДанные отсутствуют!\n");
+            if (headDoc == NULL) {
+                printf("\tДанные отсутствуют!\n");
+                system("pause");
+            }
             else SearchMenuApp(head);
-
             break;
         case '2':
-            if (headDoc == NULL) printf("\tДанные отсутствуют!\n");
+            if (headDoc == NULL) {
+                printf("\tДанные отсутствуют!\n");
+                system("pause");
+            }
             else SortMenuApp(&head);
-            system("pause");
-            system("cls");
             break;
         case '3':
             return;
@@ -3850,6 +3976,8 @@ void ManageDataApp(Appeals* head) {
 void UserSwitchDataMenu(Customers* headCust, Appeals* headApp) {
     int first_choice;
     while (1) {
+        system("cls");
+        printf("\n\t\tВыбор даных\n\t* * * * * * * * * * * * * * *\n\n");
         printf("\t1) Поиск и сортировка данных пациентов\n\t2) Поиск и сортировка данных приёмов\n\t3) Выход\n");
         first_choice = _getch();
         system("cls");
@@ -3869,10 +3997,10 @@ char data_menu() {
     int first_choice;
     system("cls");
     do {
-        printf("\n\t\tГлавное меню\n\t* * * * * * * * * * * * * * *\n\n\t1) Просмотр всех данных пациентов\n\t2) Просмотр всех данных врачей\n\t3) Выход\n");
+        printf("\n\t\tМеню выбора данных\n\t* * * * * * * * * * * * * * *\n\n\t1) Просмотр всех данных пациентов\n\t2) Просмотр всех данных врачей\n\t3) Выход\n");
         first_choice = _getch();
         system("cls");
-    } while ((int)first_choice < 48 || (int)first_choice > 50);
+    } while ((int)first_choice < 48 || (int)first_choice > 51);
     return first_choice;
 }
 
@@ -4009,6 +4137,7 @@ void user_menu(int ID)
                     break;
                 case '3':
                     a = 0;
+                    break;
                 }
             }
             break;
@@ -4022,7 +4151,7 @@ void user_menu(int ID)
             break;
         case '9':
             if (CustomersFile != NULL && AppealsFile != NULL && DoctorsFile != NULL) {
-                rewriteApp(&headApp, AppealsFile);
+                AppealsFile = rewriteApp(&headApp, AppealsFile);
                 fclose(CustomersFile);
                 fclose(AppealsFile);
                 fclose(DoctorsFile);
@@ -4033,7 +4162,7 @@ void user_menu(int ID)
                 }
             }
             if (authFile != NULL) {
-                rewriteAccount(&headAcc, authFile);
+                authFile = rewriteAccount(&headAcc, authFile);
                 fclose(authFile);
                 authFile = NULL;
                 memset(headAcc, 0, sizeof(Accounts));
@@ -4046,7 +4175,8 @@ void user_menu(int ID)
 void admin_menu(int ID) {
     char admin_choice;
     FILE* DoctorsFile = NULL,* authFile = NULL;
-    while (1) {        
+    while (1) {  
+        system("cls");
         printf("\n\t\tМеню главврача\n\t* * * * * * * * * * * * * * *\n\n");
         printf("  1) Создание / открытие файла с данными\n");
         printf("  2) Добавление записи врача\n");
@@ -4128,13 +4258,13 @@ void admin_menu(int ID) {
             break;
         case '7':
             if (DoctorsFile != NULL) {
-                rewriteDoc(&headDoc, DoctorsFile);
+                DoctorsFile = rewriteDoc(&headDoc, DoctorsFile);
                 fclose(DoctorsFile);
                 DoctorsFile = NULL;
                 memset(headDoc, 0, sizeof(Doctors));
             }
             if (authFile != NULL) {
-                rewriteAccount(&headAcc, authFile);
+                authFile = rewriteAccount(&headAcc, authFile);
                 fclose(authFile);
                 authFile = NULL;
                 memset(headAcc, 0, sizeof(Accounts));
@@ -4142,20 +4272,23 @@ void admin_menu(int ID) {
             user_menu(ID);
             break;
         case '8':
-            if (authFile == NULL) printf("\n\tФайл закрыт или не создан!\n");
+            if (authFile == NULL) {
+                printf("\n\tФайл закрыт или не создан!\n");
+                system("pause");
+                system("cls");
+            }
             else EditPass(&headAcc, ID);
             break;
         case '9':
             if (DoctorsFile != NULL) {
-                rewriteDoc(&headDoc, DoctorsFile);
+                DoctorsFile = rewriteDoc(&headDoc, DoctorsFile);
                 fclose(DoctorsFile);
                 DoctorsFile = NULL;
                 memset(headDoc, 0, sizeof(Doctors));
             }
             if (authFile != NULL) {
-                rewriteAccount(&headAcc, authFile);
+                authFile = rewriteAccount(&headAcc, authFile);
                 fclose(authFile);
-                authFile = NULL;
                 memset(headAcc, 0, sizeof(Accounts));
             }
             return;
@@ -4169,74 +4302,74 @@ void regist_menu(int ID) {
     char user_choice;
     while (1) {
         system("cls");
-        printf("\n\t\tАвторизация\n\t* * * * * * * * * * * * * * *\n\n");
+        printf("\n\t\tМеню медрегистратора\n\t* * * * * * * * * * * * * * *\n\n");
         printf("  1) Открытие файла с данными данными\n");
         printf("  2) Добавление записи пациента\n");
         printf("  3) Удаление записи пациента\n");
         printf("  4) Редактирование записи пациента\n");
         printf("  5) Просмотр всех данных пациентов в табличной форме\n");
-        printf("  6) Поиск и фильтрация данных\n");
+        printf("  6) Поиск и сортировка данных\n");
         printf("  7) Изменение пароля\n");
         printf("  8) Выход в меню\n");
         user_choice = _getch();
-        system("cls");
         switch (user_choice) {
         case '1':
             if (CustomersFile == NULL) {
                 CustomersFile = fopen("ListOfCustomers.txt", "a+");
                 authFile = fopen("Authentification.txt", "a+");
                 if (CustomersFile == NULL || authFile == NULL) {
-                    printf("\tОшибка создания / открытия файла!\n");
+                    printf("\n\tОшибка создания / открытия файла!\n\n");
                 }
                 else {
                     readingDataCust(&headCust, CustomersFile);
                     readingDataAccount(&headAcc, authFile);
-                    printf("\tВыполнено!\n");
+                    printf("\n\tВыполнено!\n\n");
                 }
             }
-            else printf("\tФайл создан / открыт ранее!\n");
+            else printf("\n\tФайл создан / открыт ранее!\n\n");
             system("pause");
             system("cls");
             break;
         case '2':
             if (CustomersFile == NULL) {
-                printf("\tФайл закрыт или не создан!\n");
+                printf("\n\tФайл закрыт или не создан!\n\n");
             }
             else {
+                
                 pushCust(&headCust, CustomersFile);
-                printf("\tВыполнено!\n");
+                printf("\n\tВыполнено!\n\n");
             }
             system("pause");
             system("cls");
             break;
         case '3':
             if (CustomersFile == NULL) {
-                printf("\tФайл закрыт или не создан!\n");
+                printf("\n\tФайл закрыт или не создан!\n\n");
             }
             else {
                 popCust(&headCust);
-                printf("\tВыполнено!\n");
+                printf("\n\tВыполнено!\n\n");
             }
             system("pause");
             system("cls");
             break;
         case '4':
             if (CustomersFile == NULL) {
-                printf("\tФайл закрыт или не создан!\n");
+                printf("\n\tФайл закрыт или не создан!\n\n");
             }
             else {
                 editDataCust(&headCust);
-                printf("\tВыполнено!\n");
+                printf("\n\tВыполнено!\n\n");
             }
             system("pause");
             system("cls");
             break;
         case '5':
             if (CustomersFile == NULL) {
-                printf("\tФайл закрыт или не создан!\n");
+                printf("\n\tФайл закрыт или не создан!\n\n");
             }
             else {
-                if (headCust == NULL) printf("\tТаблица пуста!\n");
+                if (headCust == NULL) printf("\n\tТаблица пуста!\n\n");
                 else dataTableCust(&headCust);                
             }    
             system("pause");
@@ -4247,7 +4380,7 @@ void regist_menu(int ID) {
                 printf("\tФайл закрыт или не создан!\n");
             }
             else {
-                
+                ManageDataCust(headCust);
             }
             break;
         case '7':
@@ -4256,14 +4389,14 @@ void regist_menu(int ID) {
             break;
         case '8':
             if (CustomersFile != NULL) {
-                rewriteCust(&headCust, CustomersFile);
+               CustomersFile = rewriteCust(&headCust, CustomersFile);
                 fclose(CustomersFile);
                 memset(headCust, 0, sizeof(Customers));
                 free(headCust);
                 headCust = NULL;
             }
             if (authFile != NULL) {
-                rewriteAccount(&headAcc, authFile);
+                authFile = rewriteAccount(&headAcc, authFile);
                 fclose(authFile);
                 authFile = NULL;
                 memset(headAcc, 0, sizeof(Accounts));
